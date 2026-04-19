@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D & J Automated Systems | Tech Solutions</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a2a6c;
+            --accent: #b21f1f;
+            --white: #ffffff;
+            --success: #27ae60;
+            --gold: #fdbb2d;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: linear-gradient(rgba(26, 42, 108, 0.85), rgba(1, 1, 10, 0.95)), 
+                              url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            margin: 0;
+            min-height: 100vh;
+            color: var(--white);
+            padding-bottom: 120px;
+        }
+
+        /* STICKY HEADER */
+        .sticky-header {
+            position: sticky; top: 0; width: 100%; z-index: 1000;
+            background: rgba(26, 42, 108, 0.8); backdrop-filter: blur(15px);
+            padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.1); text-align: center;
+        }
+        .nav-links { display: flex; justify-content: center; gap: 30px; margin-bottom: 15px; flex-wrap: wrap; }
+        .nav-links span { cursor: pointer; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; font-weight: bold; opacity: 0.8; transition: 0.3s; padding: 5px 10px; }
+        .nav-links span:hover { opacity: 1; color: var(--gold); }
+        .brand-header h1 { margin: 0; font-size: 2rem; letter-spacing: 5px; text-transform: uppercase; font-weight: 800; }
+        .brand-header p { margin: 5px 0 0; font-size: 0.9rem; font-weight: 300; opacity: 0.8; }
+
+        /* MODALS */
+        .modal-dropdown { position: absolute; top: 55px; left: 50%; transform: translateX(-50%); background: white; color: #333; padding: 25px; border-radius: 15px; width: 340px; display: none; z-index: 1100; text-align: left; box-shadow: 0 10px 40px rgba(0,0,0,0.6); border: 1px solid #ddd; }
+        .modal-dropdown h4 { margin: 0 0 10px 0; color: var(--primary); border-bottom: 1px solid #eee; padding-bottom: 5px; font-size: 0.9rem; }
+        .modal-dropdown p { margin: 8px 0; font-size: 0.85rem; line-height: 1.5; }
+        .modal-dropdown i { color: var(--primary); width: 20px; margin-right: 8px; }
+        .modal-dropdown a { color: var(--accent); text-decoration: none; font-weight: bold; }
+
+        /* CATALOG GRID */
+        #catalog-section { display: none; padding: 60px 5%; animation: fadeIn 0.8s ease; }
+        .catalog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; max-width: 1400px; margin: 0 auto; }
+        
+        .product-card {
+            background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(12px);
+            border: 2px solid rgba(255,255,255,0.2); border-radius: 20px;
+            padding: 30px; text-align: center; transition: 0.4s; cursor: pointer; position: relative;
+        }
+        .product-card.selected { border-color: var(--gold); background: rgba(253, 187, 45, 0.15); }
+        .product-card h3 { margin: 0; font-size: 1.4rem; color: var(--gold); }
+        .tagline { font-size: 0.75rem; color: var(--white); opacity: 0.8; margin-top: 5px; font-style: italic; font-weight: 400; }
+        .product-card .price { font-size: 1.8rem; font-weight: 800; margin: 15px 0; color: #fff; }
+
+        /* SPECIFICATION FIELDS */
+        .spec-area { display: none; margin-top: 15px; text-align: left; animation: slideDown 0.3s ease-out; }
+        .spec-area textarea, .spec-area input {
+            width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; 
+            font-family: inherit; font-size: 0.85rem; margin-top: 5px; box-sizing: border-box;
+        }
+        .selected .spec-area { display: block; }
+
+        /* FORM OVERLAY */
+        #form-overlay { display: flex; justify-content: center; align-items: center; padding: 50px 20px; }
+        .info-card { background: rgba(255, 255, 255, 0.95); color: #333; padding: 40px; border-radius: 20px; width: 100%; max-width: 500px; }
+        input[type="text"], input[type="email"], input[type="tel"], textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .btn-primary { width: 100%; background: var(--accent); color: white; border: none; padding: 18px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        
+        /* FOOTER */
+        .order-footer {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: rgba(0, 0, 0, 0.9); padding: 20px 0;
+            display: none; justify-content: center; align-items: center; gap: 40px;
+            z-index: 2000; border-top: 2px solid var(--gold);
+        }
+        .final-order-btn { background: var(--success); color: white; border: none; padding: 15px 50px; border-radius: 30px; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
+
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<form action="https://api.web3forms.com/submit" method="POST" id="mainForm">
+    <input type="hidden" name="access_key" value="b7bf7b89-2951-4062-8b1b-b8e3b3f4959d">
+    <input type="hidden" name="subject" value="New Order from D & J Automated Systems">
+    <input type="hidden" name="from_name" value="Automated Solutions Portal">
+    <input type="hidden" name="order_details" id="hiddenOrderSummary">
+    <input type="hidden" name="grand_total" id="hiddenGrandTotal">
+
+    <div class="sticky-header">
+        <div class="nav-links">
+            <span onclick="toggleModal('aboutMenu', event)">About Us</span>
+            <span onclick="toggleModal('locationMenu', event)">Our Location</span>
+            <span onclick="toggleModal('contactMenu', event)">Contact Us</span>
+        </div>
+        <div class="brand-header">
+            <h1>D & J AUTOMATED SYSTEM SOLUTIONS</h1>
+            <p>Tech Solutions for Educators, Businesses and More</p>
+        </div>
+
+        <div class="modal-dropdown" id="aboutMenu">
+            <h4>About D & J</h4>
+            <p>D & J Automated System Solutions is a startup company dedicated in delivering effecient and effective solutions by developing automated excel tool that will significantly reduce manual and tedious labor particularly in data management and analysis in school, finance and business environment.</p>
+            <p><strong>Automation features include:</strong><br>
+            • School form 1 import system (No manual entry)<br>
+            • Macro-based form control navigational and operation buttons<br>
+            • Maximize working PC screen environment (Hidden ribbons/sheets)<br>
+            • Real-time interpretation of entered raw scores<br>
+            • Convenient one-tap print feature<br>
+            • Secured and protected sheet environment<br>
+            • Userform availability, and Summary.</p>
+        </div>
+
+        <div class="modal-dropdown" id="locationMenu">
+            <h4>Our Location</h4>
+            <p><i class="fas fa-map-marker-alt"></i> Brgy. Talangdawan, Salcedo Eastern Samar</p>
+            <p style="font-size: 0.75rem; color: #666;">Unavailable google maps.</p>
+        </div>
+
+        <div class="modal-dropdown" id="contactMenu">
+            <h4>Get in Touch</h4>
+            <p><i class="fas fa-phone"></i> 09606564632</p>
+            <p><i class="fas fa-envelope"></i> macawiledarwin@gmail.com</p>
+            <p><i class="fab fa-facebook"></i> <a href="https://www.facebook.com/charles.gonzales.338658" target="_blank">Darwin Macawile</a></p>
+        </div>
+    </div>
+
+    <div id="form-overlay">
+        <div class="info-card">
+            <h2 style="text-align:center; color: var(--primary)">Client Registration Virtual Form</h2>
+            <div style="margin-bottom:15px"><input type="text" name="name" id="name" placeholder="Full Name" required></div>
+            <div style="margin-bottom:15px"><input type="text" name="address" id="address" placeholder="Address" required></div>
+            <div style="margin-bottom:15px"><input type="email" name="email" id="email" placeholder="Email Address" required></div>
+            <div style="margin-bottom:15px"><input type="tel" name="phone" id="phone" placeholder="Contact Number" required></div>
+            <div style="margin-bottom:15px"><input type="text" name="excel_version" id="excel" placeholder="Current Excel Version" required></div>
+            <button type="button" class="btn-primary" onclick="unlockCatalog()">View Our Solutions</button>
+        </div>
+    </div>
+
+    <div id="catalog-section">
+        <h2 style="text-align:center; letter-spacing:4px; margin-bottom:50px;">OUR AUTOMATED SOLUTIONS</h2>
+        <div class="catalog-grid">
+            
+            <div class="product-card" onclick="toggleSelection(this, 300)">
+                <h3>TOSIA</h3>
+                <div class="tagline">Macro driven workbook for high automation</div>
+                <p>Advanced TOS & Item Analysis tool for test result processing.</p>
+                <div class="price">₱300</div>
+            </div>
+
+            <div class="product-card" onclick="toggleSelection(this, 500)">
+                <h3>Integrated ECCD Smartsheet</h3>
+                <div class="tagline">Macro driven workbook for high automation</div>
+                <p>Efficient management system for kindergarten ECCD data.</p>
+                <div class="price">₱500</div>
+            </div>
+
+            <div class="product-card" onclick="toggleSelection(this, 250)">
+                <h3>Power Consolidator</h3>
+                <div class="tagline">Macro driven workbook for high automation</div>
+                <p>Consolidate school reports and learner data in seconds.</p>
+                <div class="price">₱250</div>
+            </div>
+
+            <div class="product-card" onclick="toggleSelection(this, 500)">
+                <h3>Automated Class Record</h3>
+                <div class="tagline">Macro driven workbook for high automation</div>
+                <p>Ultimate grading system with SF9/SF10 generator for MATATAG.</p>
+                <div class="price">₱500</div>
+            </div>
+
+            <div class="product-card" onclick="toggleSelection(this, 550)">
+                <h3>Multi-Annual Lending Management System</h3>
+                <div class="tagline">Macro driven workbook for high automation</div>
+                <p>Secure multi-annual lending tool for client tracking.</p>
+                <div class="price">₱550</div>
+                <div class="spec-area" onclick="event.stopPropagation()">
+                    <label style="color:var(--gold); font-size: 0.8rem;">Set your Workbook Access Key:</label>
+                    <input type="text" placeholder="e.g. Workbook access key" class="user-spec">
+                </div>
+            </div>
+
+            <div class="product-card" onclick="toggleSelection(this, 799)">
+                <h3>Customize Excel Template</h3>
+                <p>Tailor-made automation for your specific workflow.</p>
+                <div class="price">₱799</div>
+                <div class="spec-area" onclick="event.stopPropagation()">
+                    <label style="color:var(--gold); font-size: 0.8rem;">Design Specifications:</label>
+                    <textarea rows="3" placeholder="List your required features..." class="user-spec"></textarea>
+                </div>
+            </div>
+
+            <div class="product-card" onclick="toggleSelection(this, 850)">
+                <h3>Customize Webpage</h3>
+                <p>Professional custom portals.</p>
+                <div class="price">₱850</div>
+                <div class="spec-area" onclick="event.stopPropagation()">
+                    <label style="color:var(--gold); font-size: 0.8rem;">Web Specifications:</label>
+                    <textarea rows="3" placeholder="Theme, pages, functions..." class="user-spec"></textarea>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="order-footer" id="orderFooter">
+        <div style="font-size: 1.4rem; font-weight: bold;">Total: <span style="color:var(--gold)">₱<span id="grandTotal">0</span></span></div>
+        <button type="button" class="final-order-btn" onclick="submitOrder()">ORDER NOW</button>
+    </div>
+</form>
+
+<script>
+    let totalAmount = 0;
+
+    function toggleSelection(card, price) {
+        if (card.classList.contains('selected')) {
+            card.classList.remove('selected');
+            totalAmount -= price;
+        } else {
+            card.classList.add('selected');
+            totalAmount += price;
+        }
+        document.getElementById('grandTotal').innerText = totalAmount.toLocaleString();
+    }
+
+    function unlockCatalog() {
+        // Validation check for the initial registration form
+        const name = document.getElementById('name').value;
+        const addr = document.getElementById('address').value;
+        const mail = document.getElementById('email').value;
+        const ph = document.getElementById('phone').value;
+        const exc = document.getElementById('excel').value;
+
+        if (name && addr && mail && ph && exc) {
+            document.getElementById('form-overlay').style.display = 'none';
+            document.getElementById('catalog-section').style.display = 'block';
+            document.getElementById('orderFooter').style.display = 'flex';
+            window.scrollTo(0,0);
+        } else { 
+            alert("Please complete the registration form before proceeding."); 
+        }
+    }
+
+    function submitOrder() {
+        if (totalAmount === 0) return alert("Please select at least one product.");
+        
+        let summary = "Items Selected:\n";
+        document.querySelectorAll('.product-card.selected').forEach(card => {
+            const name = card.querySelector('h3').innerText;
+            const spec = card.querySelector('.user-spec') ? card.querySelector('.user-spec').value : "Standard Configuration";
+            summary += `- ${name} (Specs/Key: ${spec})\n`;
+        });
+
+        // Fill the hidden fields for Web3Forms
+        document.getElementById('hiddenOrderSummary').value = summary;
+        document.getElementById('hiddenGrandTotal').value = "₱" + totalAmount.toLocaleString();
+
+        // Submit the form to Web3Forms API
+        document.getElementById('mainForm').submit();
+        alert("Sending your order details to D & J Systems...");
+    }
+
+    function toggleModal(id, event) {
+        event.stopPropagation();
+        document.querySelectorAll('.modal-dropdown').forEach(m => { if(m.id !== id) m.style.display = 'none'; });
+        const t = document.getElementById(id); t.style.display = t.style.display === 'block' ? 'none' : 'block';
+    }
+    document.addEventListener('click', () => { document.querySelectorAll('.modal-dropdown').forEach(m => m.style.display = 'none'); });
+</script>
+
+</body>
+</html>
