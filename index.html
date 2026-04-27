@@ -12,6 +12,7 @@
             --white: #ffffff;
             --success: #27ae60;
             --gold: #fdbb2d;
+            --back-color: #00d4ff; /* Unique Cyan/Blue for Back button */
         }
 
         body {
@@ -31,16 +32,45 @@
         .sticky-header {
             position: sticky; top: 0; width: 100%; z-index: 1000;
             background: rgba(26, 42, 108, 0.8); backdrop-filter: blur(15px);
-            padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.1); text-align: center;
+            padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.1);
         }
-        .nav-links { display: flex; justify-content: center; gap: 30px; margin-bottom: 15px; flex-wrap: wrap; }
-        .nav-links span { cursor: pointer; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; font-weight: bold; opacity: 0.8; transition: 0.3s; padding: 5px 10px; }
-        .nav-links span:hover { opacity: 1; color: var(--gold); }
+        .nav-links { 
+            display: flex; 
+            justify-content: flex-start; 
+            gap: 20px; 
+            margin-bottom: 10px; 
+            padding-left: 5%;
+            flex-wrap: wrap; 
+        }
+        .nav-links span { cursor: pointer; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1.5px; font-weight: bold; opacity: 0.8; transition: 0.3s; padding: 5px 10px; border-radius: 4px; }
+        .nav-links span:hover { opacity: 1; color: var(--gold); background: rgba(255,255,255,0.1); }
+        
+        .brand-header { text-align: center; position: relative; padding: 0 100px; }
         .brand-header h1 { margin: 0; font-size: 2rem; letter-spacing: 5px; text-transform: uppercase; font-weight: 800; }
         .brand-header p { margin: 5px 0 0; font-size: 0.9rem; font-weight: 300; opacity: 0.8; }
 
+        /* UNIQUE MINIMAL BACK BUTTON */
+        #backBtn { 
+            display: none; 
+            position: absolute; 
+            left: 5%; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            background: none; 
+            color: var(--back-color); 
+            border: none; 
+            padding: 0; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 0.9rem;
+            z-index: 1001; 
+            transition: 0.3s;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+        #backBtn:hover { color: var(--white); transform: translateY(-50%) translateX(-5px); text-shadow: 0 0 15px rgba(255, 255, 255, 0.5); }
+
         /* MODALS */
-        .modal-dropdown { position: absolute; top: 55px; left: 50%; transform: translateX(-50%); background: white; color: #333; padding: 25px; border-radius: 15px; width: 340px; display: none; z-index: 1100; text-align: left; box-shadow: 0 10px 40px rgba(0,0,0,0.6); border: 1px solid #ddd; }
+        .modal-dropdown { position: absolute; top: 50px; left: 5%; background: white; color: #333; padding: 25px; border-radius: 15px; width: 340px; display: none; z-index: 2100; text-align: left; box-shadow: 0 10px 40px rgba(0,0,0,0.6); border: 1px solid #ddd; }
         .modal-dropdown h4 { margin: 0 0 10px 0; color: var(--primary); border-bottom: 1px solid #eee; padding-bottom: 5px; font-size: 0.9rem; }
         .modal-dropdown p { margin: 8px 0; font-size: 0.85rem; line-height: 1.5; }
         .modal-dropdown i { color: var(--primary); width: 20px; margin-right: 8px; }
@@ -73,6 +103,14 @@
         .info-card { background: rgba(255, 255, 255, 0.95); color: #333; padding: 40px; border-radius: 20px; width: 100%; max-width: 500px; }
         input[type="text"], input[type="email"], input[type="tel"], textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
         .btn-primary { width: 100%; background: var(--accent); color: white; border: none; padding: 18px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+        /* PHONE VALIDATION STYLES */
+        #phone.invalid { border-color: #e74c3c !important; background-color: #fff5f5; }
+        #phone.valid   { border-color: var(--success) !important; background-color: #f5fff8; }
+        .phone-hint { font-size: 0.78rem; margin-top: 4px; min-height: 18px; }
+        .phone-hint.error   { color: #e74c3c; }
+        .phone-hint.success { color: var(--success); }
+        .phone-hint.neutral { color: #999; }
         
         /* FOOTER */
         .order-footer {
@@ -102,9 +140,13 @@
             <span onclick="toggleModal('locationMenu', event)">Our Location</span>
             <span onclick="toggleModal('contactMenu', event)">Contact Us</span>
         </div>
+        
         <div class="brand-header">
-            <h1>D & J AUTOMATED SYSTEM SOLUTIONS</h1>
-            <p>Tech Solutions for Educators, Businesses and More</p>
+            <button type="button" id="backBtn" onclick="backToForm()">
+                <i class="fas fa-arrow-left"></i> BACK
+            </button>
+            <h1>D & J AUTOMATED SYSTEM</h1>
+            <p>Data Analysis Solutions on Excel and Websites for Education, Finance and Business</p>
         </div>
 
         <div class="modal-dropdown" id="aboutMenu">
@@ -137,11 +179,14 @@
     <div id="form-overlay">
         <div class="info-card">
             <h2 style="text-align:center; color: var(--primary)">Client Registration Virtual Form</h2>
-            <div style="margin-bottom:15px"><input type="text" name="name" id="name" placeholder="Full Name" required></div>
-            <div style="margin-bottom:15px"><input type="text" name="address" id="address" placeholder="Address" required></div>
-            <div style="margin-bottom:15px"><input type="email" name="email" id="email" placeholder="Email Address" required></div>
-            <div style="margin-bottom:15px"><input type="tel" name="phone" id="phone" placeholder="Contact Number" required></div>
-            <div style="margin-bottom:15px"><input type="text" name="excel_version" id="excel" placeholder="Current Excel Version" required></div>
+            <div style="margin-bottom:15px"><input type="text" name="name" id="name" placeholder="Full Name" required autocomplete="off"></div>
+            <div style="margin-bottom:15px"><input type="text" name="address" id="address" placeholder="Address" required autocomplete="off"></div>
+            <div style="margin-bottom:15px"><input type="email" name="email" id="email" placeholder="Email Address" required autocomplete="off"></div>
+            <div style="margin-bottom:15px">
+                <input type="tel" name="phone" id="phone" placeholder="Contact Number (11 digits)" required autocomplete="off" maxlength="11" inputmode="numeric">
+                <div class="phone-hint neutral" id="phoneHint">Must be exactly 11 digits</div>
+            </div>
+            <div style="margin-bottom:15px"><input type="text" name="excel_version" id="excel" placeholder="Current Excel Version" required autocomplete="off"></div>
             <button type="button" class="btn-primary" onclick="unlockCatalog()">View Our Solutions</button>
         </div>
     </div>
@@ -150,6 +195,20 @@
         <h2 style="text-align:center; letter-spacing:4px; margin-bottom:50px;">OUR AUTOMATED SOLUTIONS</h2>
         <div class="catalog-grid">
             
+            <div class="product-card" onclick="toggleSelection(this, 250)">
+                <h3>Automate Data Analysis in Excel</h3>
+                <div class="tagline">With free printing of your documents up to 10 pages</div>
+                <p>Professional analysis of your raw data (e.g., test items) using pre-made templates.</p>
+                <div class="price">₱250</div>
+            </div>
+
+            <div class="product-card" onclick="toggleSelection(this, 300)">
+                <h3>Power Consolidator</h3>
+                <div class="tagline">Macro driven workbook for high automation</div>
+                <p>Consolidate school reports and learner data in seconds.</p>
+                <div class="price">₱300</div>
+            </div>
+
             <div class="product-card" onclick="toggleSelection(this, 300)">
                 <h3>TOSIA</h3>
                 <div class="tagline">Macro driven workbook for high automation</div>
@@ -164,17 +223,10 @@
                 <div class="price">₱500</div>
             </div>
 
-            <div class="product-card" onclick="toggleSelection(this, 250)">
-                <h3>Power Consolidator</h3>
-                <div class="tagline">Macro driven workbook for high automation</div>
-                <p>Consolidate school reports and learner data in seconds.</p>
-                <div class="price">₱250</div>
-            </div>
-
             <div class="product-card" onclick="toggleSelection(this, 500)">
                 <h3>Automated Class Record</h3>
                 <div class="tagline">Macro driven workbook for high automation</div>
-                <p>Ultimate grading system with SF9/SF10 generator for MATATAG.</p>
+                <p>Ultimate grading system with SF9/SF10 generator for MATATAG trimester.</p>
                 <div class="price">₱500</div>
             </div>
 
@@ -196,7 +248,7 @@
                 <div class="spec-area" onclick="event.stopPropagation()">
                     <label style="color:var(--gold); font-size: 0.8rem;">Design Specifications:</label>
                     <textarea rows="3" placeholder="List your required features..." class="user-spec"></textarea>
-                </div>
+                </div>  
             </div>
 
             <div class="product-card" onclick="toggleSelection(this, 850)">
@@ -206,6 +258,16 @@
                 <div class="spec-area" onclick="event.stopPropagation()">
                     <label style="color:var(--gold); font-size: 0.8rem;">Web Specifications:</label>
                     <textarea rows="3" placeholder="Theme, pages, functions..." class="user-spec"></textarea>
+                </div>
+            </div>
+
+             <div class="product-card" onclick="toggleSelection(this, 3000)">
+                <h3>Fully Functional School Management System</h3>
+                <p>School management system hosted on GitHub app with a fully configured notification email platform.</p>
+                <div class="price">₱3,000</div>
+                <div class="spec-area" onclick="event.stopPropagation()">
+                    <label style="color:var(--gold); font-size: 0.8rem;">
+                
                 </div>
             </div>
 
@@ -221,6 +283,48 @@
 <script>
     let totalAmount = 0;
 
+    // ── FIX 1: Clear all form fields on page load to remove residual data ──
+    window.addEventListener('load', function () {
+        document.getElementById('name').value = '';
+        document.getElementById('address').value = '';
+        document.getElementById('email').value = '';
+        document.getElementById('phone').value = '';
+        document.getElementById('excel').value = '';
+    });
+
+    // ── FIX 2: Live phone validation — numbers only, exactly 11 digits ──
+    document.getElementById('phone').addEventListener('input', function () {
+        // Strip any non-numeric characters as user types
+        this.value = this.value.replace(/\D/g, '');
+
+        const hint = document.getElementById('phoneHint');
+        const len = this.value.length;
+
+        if (len === 0) {
+            this.classList.remove('valid', 'invalid');
+            hint.className = 'phone-hint neutral';
+            hint.textContent = 'Must be exactly 11 digits';
+        } else if (len < 11) {
+            this.classList.remove('valid');
+            this.classList.add('invalid');
+            hint.className = 'phone-hint error';
+            hint.textContent = `${11 - len} more digit(s) needed`;
+        } else {
+            this.classList.remove('invalid');
+            this.classList.add('valid');
+            hint.className = 'phone-hint success';
+            hint.textContent = '✓ Valid contact number';
+        }
+    });
+
+    function backToForm() {
+        document.getElementById('catalog-section').style.display = 'none';
+        document.getElementById('backBtn').style.display = 'none';
+        document.getElementById('orderFooter').style.display = 'none';
+        document.getElementById('form-overlay').style.display = 'flex';
+        window.scrollTo(0, 0);
+    }
+
     function toggleSelection(card, price) {
         if (card.classList.contains('selected')) {
             card.classList.remove('selected');
@@ -233,16 +337,30 @@
     }
 
     function unlockCatalog() {
-        // Validation check for the initial registration form
         const name = document.getElementById('name').value;
         const addr = document.getElementById('address').value;
         const mail = document.getElementById('email').value;
         const ph = document.getElementById('phone').value;
         const exc = document.getElementById('excel').value;
 
+        // ── FIX 2 (continued): Block proceed if phone is not exactly 11 digits ──
+        if (ph.length !== 11) {
+            const phoneEl = document.getElementById('phone');
+            const hint = document.getElementById('phoneHint');
+            phoneEl.classList.add('invalid');
+            phoneEl.classList.remove('valid');
+            hint.className = 'phone-hint error';
+            hint.textContent = ph.length === 0
+                ? 'Contact number is required'
+                : `Must be 11 digits — you entered ${ph.length}`;
+            phoneEl.focus();
+            return;
+        }
+
         if (name && addr && mail && ph && exc) {
             document.getElementById('form-overlay').style.display = 'none';
             document.getElementById('catalog-section').style.display = 'block';
+            document.getElementById('backBtn').style.display = 'block';
             document.getElementById('orderFooter').style.display = 'flex';
             window.scrollTo(0,0);
         } else { 
@@ -260,11 +378,9 @@
             summary += `- ${name} (Specs/Key: ${spec})\n`;
         });
 
-        // Fill the hidden fields for Web3Forms
         document.getElementById('hiddenOrderSummary').value = summary;
         document.getElementById('hiddenGrandTotal').value = "₱" + totalAmount.toLocaleString();
 
-        // Submit the form to Web3Forms API
         document.getElementById('mainForm').submit();
         alert("Sending your order details to D & J Systems...");
     }
